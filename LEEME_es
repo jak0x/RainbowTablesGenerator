@@ -1,0 +1,134 @@
+# RainbowGen CLI
+
+Generador de Rainbow Tables clásico con soporte para múltiples algoritmos, paralelización con control de carga, subida automática a AWS S3, compresión opcional y configuración flexible vía JSON.
+
+---
+
+## Características principales
+
+- Generación clásica de Rainbow Tables (`rtgen`, `rtsort`)
+- Soporte para múltiples algoritmos en un solo archivo de configuración (`--multi`)
+- Paralelización con control de carga (`loadavg` + `nproc`)
+- Subida automática de `.rt` o `.rt.gz` a Amazon S3
+- Compresión opcional con `gzip` (`--compress`)
+- Modo instalable vía `.deb` o Docker
+- Modo `--upload-only` para subir tablas ya existentes sin generarlas
+
+---
+
+## Instalación
+
+### Opción 1: Docker
+
+```bash
+docker build -t rainbowgen .
+```
+
+```bash
+docker run --rm -v $PWD:/app rainbowgen --config config.json --multi
+```
+
+### Opción 2: Paquete `.deb`
+
+```bash
+./rainbowgen_installer.sh
+sudo dpkg -i rainbowgen_1.0_amd64.deb
+```
+
+```bash
+rainbowgen --config config.json --multi
+```
+
+---
+
+## Uso básico
+
+```bash
+rainbowgen \
+  --config config.json \
+  --multi \
+  --threads 4 \
+  --compress
+```
+
+### Flags disponibles
+
+| Flag            | Descripción |
+|-----------------|-------------|
+| `--config`      | Archivo JSON con configuración global y lista de trabajos |
+| `--multi`       | Procesa todos los algoritmos definidos en el JSON |
+| `--upload-only` | Solo sube archivos `.rt` o `.rt.gz` al bucket S3 |
+| `--threads`     | Número de hilos de procesamiento en paralelo |
+| `--compress`    | Comprime los archivos `.rt` antes de subir |
+| `--help`        | Muestra la ayuda |
+
+---
+
+## Formato de `config.json`
+
+```json
+{
+  "global": {
+    "threads": 4,
+    "bucket": "mi-bucket-rainbow",
+    "compress": true
+  },
+  "jobs": [
+    {
+      "algo": "md5",
+      "charset": "mixalpha-numeric",
+      "min": 1,
+      "max": 6,
+      "chainlen": 2100,
+      "chainnum": 33554432,
+      "table": 0,
+      "start": 0,
+      "parts": 2
+    },
+    {
+      "algo": "sha1",
+      "charset": "loweralpha",
+      "min": 1,
+      "max": 5,
+      "chainlen": 1000,
+      "chainnum": 1000000,
+      "table": 1,
+      "start": 0,
+      "parts": 1
+    }
+  ]
+}
+```
+
+---
+
+## Estructura del repositorio
+
+```
+.
+├── Dockerfile                 # Imagen ejecutable en cualquier sistema
+├── rainbow_gen_parallel_s3.sh # Script principal con todas las funciones
+├── rainbowgen_installer.sh    # Script para generar el paquete .deb
+├── config.json                # Configuración de ejemplo
+├── README.md                  # Este archivo 😄
+```
+
+---
+
+## Requisitos
+
+- Ubuntu/Debian
+- `awscli`, `jq`, `gzip`, `bc`, `make`
+- Cuenta AWS con credenciales configuradas
+
+---
+
+## 📬 Contacto
+
+Creado por jak0x. Para sugerencias, mejoras o dudas, abre un issue o pull request.
+
+---
+
+## 🛡️ Licencia
+
+MIT License. Úsalo con fines educativos, legales y éticos.
