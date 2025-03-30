@@ -125,7 +125,7 @@ rainbowgen \
 
 ## Contact
 
-Created with ❤️ by jak0x. For suggestions, contributions or questions, open an issue or pull request.
+Created by jak0x. For suggestions, contributions or questions, open an issue or pull request.
 
 ---
 
